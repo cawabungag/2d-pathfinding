@@ -5,11 +5,11 @@ using UnityEngine.SceneManagement;
 
 namespace Infrastructure
 {
-    public class SceneLoader : ISceneLoader
+    public class SceneLoaderService : ISceneLoader, IService
     {
         private readonly ICoroutineRunner _coroutineRunner;
 
-        public SceneLoader(ICoroutineRunner coroutineRunner)
+        public SceneLoaderService(ICoroutineRunner coroutineRunner)
         {
             _coroutineRunner = coroutineRunner;
         }

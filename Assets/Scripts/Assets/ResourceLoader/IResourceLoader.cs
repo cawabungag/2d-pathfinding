@@ -6,5 +6,6 @@ namespace Assets
 	public interface IResourceLoader : IService
 	{
 		GameObject LoadGameObject(string path);
+		TextAsset LoadTextAsset(string path);
 	}
 }

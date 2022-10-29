@@ -3,24 +3,26 @@ using Core.WindowService;
 using Infrastructure;
 using Infrastructure.States;
 using States;
+using StaticData;
 
 public class BoostrapState : BaseState
 {
 	private readonly GameStateMachine _gameStateMachine;
-	private readonly SceneLoader _sceneLoader;
+	private readonly SceneLoaderService _sceneLoaderService;
 	private readonly ServiceLocator _services;
 
-	public BoostrapState(GameStateMachine gameStateMachine, SceneLoader sceneLoader, ServiceLocator services)
+	public BoostrapState(GameStateMachine gameStateMachine, SceneLoaderService sceneLoaderService,
+		ServiceLocator services)
 	{
 		_gameStateMachine = gameStateMachine;
-		_sceneLoader = sceneLoader;
+		_sceneLoaderService = sceneLoaderService;
 		_services = services;
 	}
 	
 	public override void Enter()
 	{
 		RegisterServices();
-		_sceneLoader.Load(SceneUtils.START_SCENE_NAME, OnEnterStartLevel);
+		_sceneLoaderService.Load(SceneUtils.START_SCENE_NAME, OnEnterStartLevel);
 	}
 
 	private void RegisterServices()
@@ -29,11 +31,12 @@ public class BoostrapState : BaseState
 		_services.RegisterSingle<IResourceLoader>(new ResourceLoader());
 
 		var resourceLoader = _services.Single<IResourceLoader>();
+		var staticDataService = new StaticDataServiceService(resourceLoader);
+		staticDataService.Initialize();
+
+		_services.RegisterSingle<IStaticDataService>(staticDataService);
 		_services.RegisterSingle<IInstantiator>(new Instantiator(resourceLoader));
 	}
 
-	private void OnEnterStartLevel()
-	{
-		_gameStateMachine.Enter<StartState>();
-	}
+	private void OnEnterStartLevel() => _gameStateMachine.Enter<StartState>();
 }

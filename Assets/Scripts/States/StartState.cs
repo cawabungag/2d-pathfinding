@@ -1,20 +1,60 @@
+using Assets;
+using Core;
+using Core.WindowService;
+using Factories;
 using Infrastructure.States;
+using StaticData;
+using Utils;
 
 namespace States
 {
 	public class StartState : BaseState
 	{
 		private readonly GameStateMachine _gameStateMachine;
+		private readonly ServiceLocator _services;
+		private readonly CanvasRoot _canvasRoot;
+		private WindowService _windowsService;
+		private PresenterFactory _presenterFactory;
 
-		public StartState(GameStateMachine gameStateMachine)
+		public StartState(GameStateMachine gameStateMachine, ServiceLocator services, CanvasRoot canvasRoot)
 		{
 			_gameStateMachine = gameStateMachine;
-		}
-		
-		public void Enter()
-		{
+			_services = services;
+			_canvasRoot = canvasRoot;
 		}
 
+		public override void Enter()
+		{
+			base.Enter();
+			RegisterServices();
+			RegisterPresenters();
+		}
+
+		private void RegisterServices()
+		{
+			var instantiator = _services.Single<IInstantiator>();
+			_presenterFactory = new PresenterFactory(instantiator, _canvasRoot, this);
+			_windowsService = new WindowService();
+			
+			_services.RegisterSingle<IPresenterFactory>(_presenterFactory);
+			_services.RegisterSingle<IWindowService>(_windowsService);
+		}
+		
+		private void RegisterPresenters()
+		{
+			var staticDataService = _services.Single<IStaticDataService>();
+			var startGameWindowData = staticDataService.GetWindowData(PresenterIds.START_GAME);
+			var startGamePresenter = _presenterFactory.Create(startGameWindowData);
+			_windowsService.RegisterPresenter(startGamePresenter);
+			_windowsService.Open(PresenterIds.START_GAME);
+		}
+
+		public override void Exit()
+		{
+			base.Exit();
+			var windowService = _services.Single<IWindowService>();
+			windowService.DisposePresenters();
+		}
 
 		public void GoToGame() => _gameStateMachine.Enter<GameState>();
 	}

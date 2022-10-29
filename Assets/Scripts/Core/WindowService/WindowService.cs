@@ -1,27 +1,35 @@
 using System;
 using System.Collections.Generic;
+using Assets;
 
 namespace Core.WindowService
 {
 	public class WindowService : IWindowService
 	{
+		private readonly IResourceLoader _resourceLoader;
+		
 		private readonly List<IPresenter> _registeredPresenters = new();
 		private readonly Stack<IPresenter> _presentersStack = new();
-		
+
 		public void RegisterPresenter(IPresenter presenter)
 		{
 			presenter.Close();
 			_registeredPresenters.Add(presenter);
 		}
 
-		public void DisposePresenter(IPresenter presenter)
+		public void DisposePresenters()
 		{
+			foreach (var presenter in _registeredPresenters) 
+				presenter.Close();
+			
+			_registeredPresenters.Clear();
+			_presentersStack.Clear();
 		}
 
 		public void Open(string presenterId)
 		{
-			var openedPresenter = _presentersStack.Pop();
-			openedPresenter.Close();
+			if (_presentersStack.TryPop(out var openedPresenter)) 
+				openedPresenter.Close();
 			
 			var presenter = GetPresenter(presenterId);
 			_presentersStack.Push(presenter);

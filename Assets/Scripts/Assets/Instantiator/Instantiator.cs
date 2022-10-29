@@ -16,5 +16,11 @@ namespace Assets
 			var asset = _resourceLoader.LoadGameObject(path);
 			return Object.Instantiate(asset, position, rotation);
 		}
+
+		public GameObject InstantiateGameObject(string path, Transform parent)
+		{
+			var asset = _resourceLoader.LoadGameObject(path);
+			return Object.Instantiate(asset, parent);
+		}
 	}
 }
