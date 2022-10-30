@@ -23,7 +23,7 @@ namespace UI.StartGame
 
 		private void OnStartClick()
 		{
-			_startState.GoToGame();
+			_startState.GoToGameState();
 		}
 		
 		protected override void OnClose()

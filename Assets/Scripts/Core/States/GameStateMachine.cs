@@ -13,22 +13,18 @@ public class GameStateMachine
 	public GameStateMachine(SceneLoaderService sceneLoaderService, ServiceLocator services, CanvasRoot canvasRoot)
 	{
 		var boostrapState = new BoostrapState(this, sceneLoaderService, services);
-		var startState = new StartState(this, services, canvasRoot);
+		var startState = new StartState(this, services, canvasRoot, sceneLoaderService);
+		var gameState = new GameState();
 			
 		_states.Add(typeof(BoostrapState), boostrapState);
 		_states.Add(typeof(StartState), startState);
+		_states.Add(typeof(GameState), gameState);
 	}
 
 	public void Enter<TState>() where TState : class, IState
 	{
 		var state = ChangeState<TState>();
 		state.Enter();
-	}
-
-	public void Enter<TState, TPayload>(TPayload payload) where TState : class, IPayloadedState<TPayload>
-	{
-		var state = ChangeState<TState>();
-		state.Enter(payload);
 	}
 
 	public void Update()

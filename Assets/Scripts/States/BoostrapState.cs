@@ -22,7 +22,7 @@ public class BoostrapState : BaseState
 	public override void Enter()
 	{
 		RegisterServices();
-		_sceneLoaderService.Load(SceneUtils.START_SCENE_NAME, OnEnterStartLevel);
+		_sceneLoaderService.Load(SceneUtils.START_SCENE_NAME, OnStartSceneLoaded);
 	}
 
 	private void RegisterServices()
@@ -38,5 +38,5 @@ public class BoostrapState : BaseState
 		_services.RegisterSingle<IInstantiator>(new Instantiator(resourceLoader));
 	}
 
-	private void OnEnterStartLevel() => _gameStateMachine.Enter<StartState>();
+	private void OnStartSceneLoaded() => _gameStateMachine.Enter<StartState>();
 }

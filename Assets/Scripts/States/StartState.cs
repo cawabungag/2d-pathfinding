@@ -2,6 +2,7 @@ using Assets;
 using Core;
 using Core.WindowService;
 using Factories;
+using Infrastructure;
 using Infrastructure.States;
 using StaticData;
 using Utils;
@@ -13,14 +14,17 @@ namespace States
 		private readonly GameStateMachine _gameStateMachine;
 		private readonly ServiceLocator _services;
 		private readonly CanvasRoot _canvasRoot;
+		private readonly SceneLoaderService _sceneLoaderService;
 		private WindowService _windowsService;
 		private PresenterFactory _presenterFactory;
 
-		public StartState(GameStateMachine gameStateMachine, ServiceLocator services, CanvasRoot canvasRoot)
+		public StartState(GameStateMachine gameStateMachine, ServiceLocator services, CanvasRoot canvasRoot,
+			SceneLoaderService sceneLoaderService)
 		{
 			_gameStateMachine = gameStateMachine;
 			_services = services;
 			_canvasRoot = canvasRoot;
+			_sceneLoaderService = sceneLoaderService;
 		}
 
 		public override void Enter()
@@ -56,6 +60,7 @@ namespace States
 			windowService.DisposePresenters();
 		}
 
-		public void GoToGame() => _gameStateMachine.Enter<GameState>();
+		public void GoToGameState() => _sceneLoaderService.Load(SceneUtils.GAME_SCENE_NAME, OnGameSceneLoaded);
+		private void OnGameSceneLoaded() => _gameStateMachine.Enter<GameState>();
 	}
 }
