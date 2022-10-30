@@ -15,7 +15,8 @@
       "y": 21
     },
     "gridWidth": 41,
-    "gridHeight": 22
+    "gridHeight": 22,
+    "obstacleRadius" : 3
   },
   "bugStaticData": {
     "viewPath": "Prefabs/Bug"

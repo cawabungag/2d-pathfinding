@@ -11,5 +11,6 @@ namespace StaticData
 		
 		public int gridWidth;
 		public int gridHeight;
+		public int obstacleRadius;
 	}
 }

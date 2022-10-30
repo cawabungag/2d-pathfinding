@@ -17,7 +17,12 @@ namespace Utils
 			return linearSteps + sqr * diagonalSteps;
 		}
 
-		public static Vector3 ToVector3(this Vector2Int vector2Int, int zAxis = DEFAULT_Z_AXIS) => new(vector2Int.x, vector2Int.y, zAxis);
+		public static Vector3 ToVector3(this Vector2Int vector2Int, int zAxis = DEFAULT_Z_AXIS) =>
+			new(vector2Int.x, vector2Int.y, zAxis);
+
 		public static Vector2 ToVector2F(this Vector2Int vector2Int) => new(vector2Int.x, vector2Int.y);
+
+		public static Vector2Int ToVector2Int(this Vector2 vector2) =>
+			new(Mathf.RoundToInt(vector2.x), Mathf.RoundToInt(vector2.y));
 	}
 }

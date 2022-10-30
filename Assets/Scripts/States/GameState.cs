@@ -8,6 +8,7 @@ using Game;
 using Grid;
 using Infrastructure;
 using Infrastructure.States;
+using InputService;
 using Pathfinding;
 using StaticData;
 using UnityEngine;
@@ -87,11 +88,13 @@ namespace States
 			if (_isExitPending)
 				return;
 			
-			var gameCheckFinishService = _serviceLocator.Single<GameCheckFinishService>();
-			var gameMoverService = _serviceLocator.Single<GameMoverService>();
+			var checkFinishService = _serviceLocator.Single<GameCheckFinishService>();
+			var moverService = _serviceLocator.Single<GameMoverService>();
+			var obstaclesService = _serviceLocator.Single<GameObstaclesService>();
 			
-			gameCheckFinishService.Execute(_bugsPresenterBuffer.Values);
-			gameMoverService.Execute(_bugsPresenterBuffer, _bugsRoutesBuffer, deltaTime);
+			var obstacles = obstaclesService.Execute();
+			checkFinishService.Execute(_bugsPresenterBuffer.Values);
+			moverService.Execute(_bugsPresenterBuffer, _bugsRoutesBuffer, deltaTime);
 		}
 
 		private void RegisterServices()
@@ -112,8 +115,14 @@ namespace States
 			var gameCheckFinishService = new GameCheckFinishService(_staticDataService, this);
 			_serviceLocator.RegisterSingle(gameCheckFinishService);
 
+			var inputService = new InputService.InputService();
+			_serviceLocator.RegisterSingle<IInputService>(inputService);
+
 			var gameMoverService = new GameMoverService();
 			_serviceLocator.RegisterSingle(gameMoverService);
+
+			var gameObstacleService = new GameObstaclesService(inputService, gridService, _staticDataService);
+			_serviceLocator.RegisterSingle(gameObstacleService);
 		}
 
 		public void ExitGame()
