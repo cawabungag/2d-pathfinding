@@ -22,7 +22,7 @@ namespace StaticData
 			_staticData = JsonUtility.FromJson<StaticData>(text);
 		}
 
-		public WindowData GetWindowData(string presenterId)
+		public WindowStaticData GetWindowData(string presenterId)
 		{
 			foreach (var windowData in _staticData.WindowsData)
 			{
@@ -34,7 +34,9 @@ namespace StaticData
 
 			throw new InvalidOperationException();
 		}
+
+		public GameRulesStaticData GetGameRulesData() => _staticData.gameRulesStaticData;
+		public BugStaticData GetBugStaticData() => _staticData.bugStaticData;
+		public string GetTilePath() => _staticData.tilePath;
 	}
-	
-	
 }

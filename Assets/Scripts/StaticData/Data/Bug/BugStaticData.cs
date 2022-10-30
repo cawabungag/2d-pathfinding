@@ -3,9 +3,9 @@ using System;
 namespace StaticData
 {
 	[Serializable]
-	public class WindowData
+	public class BugStaticData
 	{
-		public string presenterId;
 		public string viewPath;
+		private BugStatsStaticData[] bugStats;
 	}
 }

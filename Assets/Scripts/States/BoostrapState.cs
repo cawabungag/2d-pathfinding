@@ -31,10 +31,10 @@ public class BoostrapState : BaseState
 		_services.RegisterSingle<IResourceLoader>(new ResourceLoader());
 
 		var resourceLoader = _services.Single<IResourceLoader>();
-		var staticDataService = new StaticDataServiceService(resourceLoader);
+		IStaticDataService staticDataService = new StaticDataServiceService(resourceLoader);
 		staticDataService.Initialize();
 
-		_services.RegisterSingle<IStaticDataService>(staticDataService);
+		_services.RegisterSingle(staticDataService);
 		_services.RegisterSingle<IInstantiator>(new Instantiator(resourceLoader));
 	}
 

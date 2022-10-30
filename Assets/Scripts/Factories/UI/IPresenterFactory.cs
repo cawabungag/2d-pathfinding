@@ -5,5 +5,5 @@ using StaticData;
 
 namespace Factories
 {
-	public interface IPresenterFactory : IFactory<WindowData, IPresenter>, IService { }
+	public interface IPresenterFactory : IFactory<WindowStaticData, IPresenter>, IService { }
 }

@@ -4,7 +4,7 @@ namespace Factories.Bug
 {
 	public interface IBugPresenter
 	{
-		void Initialize();
-		void Move(Vector2 direction, float speed);
+		void Move(Vector3 target, float speed, float deltaTime);
+		Vector2 Position { get; }
 	}
 }

@@ -2,7 +2,7 @@ namespace Infrastructure.States
 {
 	public interface IExitableState
 	{
-		void Update();
+		void Update(float deltaTime);
 		void Exit();
 	}
 }

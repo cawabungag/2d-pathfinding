@@ -4,5 +4,21 @@
       "presenterId": "start_game",
       "viewPath": "UI/ViewStart"
     }
-  ]
+  ],
+  "gameRulesStaticData": {
+    "startPosition": {
+      "x": 0,
+      "y": 0
+    },
+    "finishPosition": {
+      "x": 40,
+      "y": 21
+    },
+    "gridWidth": 41,
+    "gridHeight": 22
+  },
+  "bugStaticData": {
+    "viewPath": "Prefabs/Bug"
+  },
+  "tilePath": "Prefabs/Tile"
 }

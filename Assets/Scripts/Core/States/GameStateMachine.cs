@@ -14,7 +14,7 @@ public class GameStateMachine
 	{
 		var boostrapState = new BoostrapState(this, sceneLoaderService, services);
 		var startState = new StartState(this, services, canvasRoot, sceneLoaderService);
-		var gameState = new GameState();
+		var gameState = new GameState(this, services, sceneLoaderService);
 			
 		_states.Add(typeof(BoostrapState), boostrapState);
 		_states.Add(typeof(StartState), startState);
@@ -27,10 +27,7 @@ public class GameStateMachine
 		state.Enter();
 	}
 
-	public void Update()
-	{
-		_activeState?.Update();
-	}
+	public void Update(float deltaTime) => _activeState?.Update(deltaTime);
 
 	private TState ChangeState<TState>() where TState : class, IExitableState
 	{

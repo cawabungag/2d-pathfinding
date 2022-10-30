@@ -20,6 +20,6 @@ namespace Core
 			DontDestroyOnLoad(this);
 		}
 
-		private void Update() => _gameStateMachine.Update();
+		private void Update() => _gameStateMachine.Update(Time.deltaTime);
 	}
 }

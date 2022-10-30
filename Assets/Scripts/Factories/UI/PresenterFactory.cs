@@ -23,10 +23,10 @@ namespace Factories
 			_startState = startState;
 		}
 		
-		public IPresenter Create(WindowData windowData)
+		public IPresenter Create(WindowStaticData windowStaticData)
 		{
-			var viewPath = windowData.viewPath;
-			var presenterId = windowData.presenterId;
+			var viewPath = windowStaticData.viewPath;
+			var presenterId = windowStaticData.presenterId;
 			
 			var view = _instantiator.InstantiateGameObject(viewPath, _canvasRoot.Root.transform);
 

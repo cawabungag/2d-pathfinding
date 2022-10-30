@@ -37,7 +37,7 @@ public class Path : IPath
 	/// Calculate a new path between two points.
 	/// </summary>
 	/// <exception cref="ArgumentNullException"></exception>
-	public bool Calculate(Vector2Int start, Vector2Int target, IReadOnlyCollection<Vector2Int> obstacles,
+	public void Calculate(Vector2Int start, Vector2Int target, IReadOnlyCollection<Vector2Int> obstacles,
 		out IReadOnlyCollection<Vector2Int> path)
 	{
 		if (obstacles == null) throw new ArgumentNullException(nameof(obstacles));
@@ -45,7 +45,7 @@ public class Path : IPath
 		if (!GenerateNodes(start, target, obstacles))
 		{
 			path = Array.Empty<Vector2Int>();
-			return false;
+			return;
 		}
 
 		_output.Clear();
@@ -53,7 +53,6 @@ public class Path : IPath
 
 		while (_links.TryGetValue(target, out target)) _output.Add(target);
 		path = _output;
-		return true;
 	}
 
 	private bool GenerateNodes(Vector2Int start, Vector2Int target, IReadOnlyCollection<Vector2Int> obstacles)

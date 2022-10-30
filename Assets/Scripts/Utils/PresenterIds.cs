@@ -13,7 +13,21 @@ namespace Utils
 		{
 			var asd = new StaticData.StaticData();
 			asd.WindowsData = new[]
-				{new WindowData() {presenterId = "start_game", viewPath = "Assets/Resources/UI/ViewStart"}};
+				{new WindowStaticData() {presenterId = "start_game", viewPath = "Assets/Resources/UI/ViewStart"}};
+			asd.gameRulesStaticData = new GameRulesStaticData()
+			{
+				startPosition = new Vector2Int(0, 0),
+				finishPosition = new Vector2Int(179, 89),
+				gridWidth = 180,
+				gridHeight = 90
+			};
+
+			asd.bugStaticData = new BugStaticData()
+			{
+				viewPath = "Prefabs/Bug"
+			};
+			asd.tilePath = "Prefabs/Tile";
+	
 			var aasas = JsonUtility.ToJson(asd);
 			Debug.LogError($"{aasas}");
 		}
