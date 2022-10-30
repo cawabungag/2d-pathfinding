@@ -11,7 +11,6 @@ using Infrastructure.States;
 using InputService;
 using Pathfinding;
 using StaticData;
-using UnityEngine;
 
 namespace States
 {
@@ -23,7 +22,6 @@ namespace States
 		private IStaticDataService _staticDataService;
 		
 		private readonly Dictionary<int, IBugPresenter> _bugsPresenterBuffer = new();
-		private readonly Dictionary<int, Vector2Int[]> _bugsRoutesBuffer = new();
 
 		private bool _isExitPending;
 
@@ -45,7 +43,6 @@ namespace States
 		{
 			base.Exit();
 			_bugsPresenterBuffer.Clear();
-			_bugsRoutesBuffer.Clear();
 		}
 
 		private void Initialize()
@@ -73,12 +70,8 @@ namespace States
 			var bugStaticData = _staticDataService.GetBugStaticData();
 			var bug = bugFactory.Create(bugStaticData);
 			var hash = "axelbolt".ToCharArray().Sum(x => x) % 100;
-			var pathfindingService = _serviceLocator.Single<IPathfindingService>();
-			var gameRules = _staticDataService.GetGameRulesData();
-			var routes = 
-				pathfindingService.CalculatePath(gameRules.startPosition, gameRules.finishPosition, new Vector2Int[]{});
+			
 			_bugsPresenterBuffer.Add(hash, bug);
-			_bugsRoutesBuffer.Add(hash, routes);
 		}
 
 		public override void Update(float deltaTime)
@@ -91,10 +84,14 @@ namespace States
 			var checkFinishService = _serviceLocator.Single<GameCheckFinishService>();
 			var moverService = _serviceLocator.Single<GameMoverService>();
 			var obstaclesService = _serviceLocator.Single<GameObstaclesService>();
+			var pathFindService = _serviceLocator.Single<GameCalculatePathService>();
+			var gridService = _serviceLocator.Single<IGridService>();
 			
+			gridService.Clear();
 			var obstacles = obstaclesService.Execute();
+			var bugsRoutesBuffer = pathFindService.Execute(obstacles, _bugsPresenterBuffer);
 			checkFinishService.Execute(_bugsPresenterBuffer.Values);
-			moverService.Execute(_bugsPresenterBuffer, _bugsRoutesBuffer, deltaTime);
+			moverService.Execute(_bugsPresenterBuffer, bugsRoutesBuffer, deltaTime);
 		}
 
 		private void RegisterServices()
@@ -123,6 +120,9 @@ namespace States
 
 			var gameObstacleService = new GameObstaclesService(inputService, gridService, _staticDataService);
 			_serviceLocator.RegisterSingle(gameObstacleService);
+
+			var gameCalculatePathService = new GameCalculatePathService(pathfindingService, _staticDataService, gridService);
+			_serviceLocator.RegisterSingle(gameCalculatePathService);
 		}
 
 		public void ExitGame()

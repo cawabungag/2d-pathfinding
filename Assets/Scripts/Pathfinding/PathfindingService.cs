@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using Unity.Burst;
 using UnityEngine;
@@ -15,7 +16,7 @@ namespace Pathfinding
 		}
 
 		[BurstCompile]
-		public Vector2Int[] CalculatePath(Vector2Int startPoint, Vector2Int finishPoint, Vector2Int[] obstacles)
+		public Vector2Int[] CalculatePath(Vector2Int startPoint, Vector2Int finishPoint, List<Vector2Int> obstacles)
 		{
 			_path.Calculate(startPoint, finishPoint, obstacles, out var result);
 			return result.Reverse().ToArray();

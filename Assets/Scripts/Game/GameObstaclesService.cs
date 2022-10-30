@@ -32,17 +32,20 @@ namespace Game
 			var obstacleRadius = gameRules.obstacleRadius;
 			var obstaclesPoints = GetObstaclesPoints(obstacleRadius, _obstaclesPointBuffer, 
 				mousePositionRound);
+			DrawObstaclesOnGrid(obstaclesPoints);
+			return _obstaclesPointBuffer;
+		}
 
+		private void DrawObstaclesOnGrid(IEnumerable<Vector2Int> obstaclesPoints)
+		{
 			foreach (var obstaclesPoint in obstaclesPoints)
 			{
 				var tile = _gridService.GetTile(obstaclesPoint);
 				tile?.SetObstacle();
 			}
-
-			return _obstaclesPointBuffer;
 		}
 
-		private ICollection<Vector2Int> GetObstaclesPoints(int obstacleRadius,
+		private IEnumerable<Vector2Int> GetObstaclesPoints(int obstacleRadius,
 			ICollection<Vector2Int> obstaclesPointBuffer, Vector2Int mousePos)
 		{
 			obstaclesPointBuffer.Clear();

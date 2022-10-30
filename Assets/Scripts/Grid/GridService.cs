@@ -29,5 +29,22 @@ namespace Grid
 		}
 
 		public ITilePresenter GetTile(Vector2Int vector2Int) => _tiles[vector2Int];
+		
+		public void DrawRoute(Vector2Int[] route)
+		{
+			foreach (var point in route)
+			{
+				if (_tiles.TryGetValue(point, out var tile))
+				{
+					tile.SetPath();
+				}
+			}
+		}
+
+		public void Clear()
+		{
+			foreach (var tile in _tiles.Values) 
+				tile.SetNormal();
+		}
 	}
 }

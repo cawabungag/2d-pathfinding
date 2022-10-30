@@ -8,5 +8,7 @@ namespace Grid
 	{
 		void GenerateGrid(int width, int height);
 		ITilePresenter GetTile(Vector2Int vector2Int);
+		void DrawRoute(Vector2Int[] route);
+		void Clear();
 	}
 }
