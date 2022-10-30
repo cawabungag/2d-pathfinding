@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Factories.Bug
 {
-	public class BugMove : MonoBehaviour
+	public class BugMover : MonoBehaviour
 	{
 		public void Move(Vector2 direction, float speed)
 		{

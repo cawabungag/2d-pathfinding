@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Factories.Bug
 {
-	public class BugRotate : MonoBehaviour
+	public class BugRotator : MonoBehaviour
 	{
 		public void Rotate(Vector2 direction)
 		{
