@@ -12,6 +12,7 @@ namespace UI.Presenters
 		private const float LINE_WIDTH = 0.2f;
 
 		public override string PresenterId => PresenterIds.CIRCLE;
+		public override bool IsPopUp => true;
 
 		public CirclePresenter(CircleView view) : base(view)
 		{

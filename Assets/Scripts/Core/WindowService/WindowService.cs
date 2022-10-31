@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Assets;
 using Assets.ResourceLoader;
 
 namespace Core.WindowService
@@ -8,7 +7,7 @@ namespace Core.WindowService
 	public class WindowService : IWindowService
 	{
 		private readonly IResourceLoader _resourceLoader;
-		
+
 		private readonly List<IPresenter> _registeredPresenters = new();
 		private readonly Stack<IPresenter> _presentersStack = new();
 
@@ -25,16 +24,17 @@ namespace Core.WindowService
 				presenter.Close();
 				presenter.Dispose();
 			}
-			
+
 			_registeredPresenters.Clear();
 			_presentersStack.Clear();
 		}
 
 		public void Open(string presenterId)
 		{
-			if (_presentersStack.TryPop(out var openedPresenter)) 
-				openedPresenter.Close();
-			
+			if (_presentersStack.TryPop(out var openedPresenter))
+				if (!openedPresenter.IsPopUp)
+					openedPresenter.Close();
+
 			var presenter = GetPresenter(presenterId);
 			_presentersStack.Push(presenter);
 			presenter.Open();
@@ -54,5 +54,9 @@ namespace Core.WindowService
 
 			throw new InvalidOperationException($"There is no presenter with the type of {presenterId}");
 		}
+	}
+
+	public interface IPopUp
+	{
 	}
 }

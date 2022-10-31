@@ -1,13 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
-using Assets;
 using Assets.Instantiator;
 using Bug;
 using Core.SceneManagement;
 using Core.Services;
 using Core.States;
 using Core.WindowService;
-using Factories;
 using Factories.Bug;
 using Factories.Tile;
 using Factories.UI;
@@ -37,6 +35,7 @@ namespace States
 		private GameMoverService _gameMoverService;
 		private GameCheckFinishService _gameCheckFinishService;
 		private IPresenter _circleWindowPresenter;
+		private IPresenter _pathWindowPresenter;
 
 		public GameState(GameStateMachine gameStateMachine, ServiceLocator serviceLocator,
 			SceneLoaderService sceneLoaderService)
@@ -58,10 +57,17 @@ namespace States
 		private void RegisterPresenters()
 		{
 			var presenterFactory = _serviceLocator.Single<IPresenterFactory>();
-			var circleWindowData = _staticDataService.GetWindowData(PresenterIds.CIRCLE);
 			var windowsService = _serviceLocator.Single<IWindowService>();
+			
+			var circleWindowData = _staticDataService.GetWindowData(PresenterIds.CIRCLE);
 			_circleWindowPresenter = presenterFactory.Create(circleWindowData);
 			windowsService.RegisterPresenter(_circleWindowPresenter);
+			
+			var pathWindowData = _staticDataService.GetWindowData(PresenterIds.PATH);
+			_pathWindowPresenter = presenterFactory.Create(pathWindowData);
+			windowsService.RegisterPresenter(_pathWindowPresenter);
+			
+			windowsService.Open(PresenterIds.PATH);
 			windowsService.Open(PresenterIds.CIRCLE);
 		}
 
@@ -89,7 +95,8 @@ namespace States
 				(CirclePresenter) _circleWindowPresenter);
 			_serviceLocator.RegisterSingle(_gameObstaclesService);
 
-			_gameCalculatePathService = new GameCalculatePathService(pathfindingService, _staticDataService);
+			_gameCalculatePathService = new GameCalculatePathService(pathfindingService, _staticDataService, 
+				(PathPresenter)_pathWindowPresenter);
 			_serviceLocator.RegisterSingle(_gameCalculatePathService);
 
 			var gridService = new GridService(tileFactory);
@@ -112,11 +119,6 @@ namespace States
 			finishTile.SetFinish();
 			
 			AddBug();
-			AddBug();
-			AddBug();
-			AddBug();
-			AddBug();
-			
 			_isExitPending = false;
 		}
 
@@ -125,7 +127,6 @@ namespace States
 			var bugFactory = _serviceLocator.Single<IBugFactory>();
 			var bugStaticData = _staticDataService.GetBugStaticData();
 			var bug = bugFactory.Create(bugStaticData);
-			var hash = "axelbolt".ToCharArray().Sum(x => x) % 100;
 			_bugsPresenterBuffer.Add(bug);
 		}
 

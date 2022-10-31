@@ -42,6 +42,12 @@ namespace Factories.UI
 					var circleView = view.GetComponent<CircleView>();
 					return new CirclePresenter(circleView);
 				}
+				
+				case PresenterIds.PATH:
+				{
+					var pathView = view.GetComponent<PathView>();
+					return new PathPresenter(pathView);
+				}
 			}
 
 			throw new InvalidOperationException();

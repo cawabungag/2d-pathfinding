@@ -9,6 +9,7 @@ namespace UI.Presenters
 	{
 		private readonly StartState _startState;
 		public override string PresenterId => PresenterIds.START_GAME;
+		public override bool IsPopUp => false;
 
 		public StartPresenter(StartView view, StartState startState) : base(view)
 		{

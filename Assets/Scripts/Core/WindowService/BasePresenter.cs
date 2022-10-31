@@ -5,6 +5,7 @@ namespace Core.WindowService
 	public abstract class BasePresenter<TView> : IPresenter where TView : Object, IView
 	{
 		public abstract string PresenterId { get; }
+		public abstract bool IsPopUp { get; }
 		protected TView View { get; }
 
 		protected BasePresenter(TView view)

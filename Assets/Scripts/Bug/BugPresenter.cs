@@ -18,8 +18,7 @@ namespace Bug
 		public void Move(Vector3 target, float speed, float deltaTime)
 		{
 			_bugView.Mover.Move(target, speed, deltaTime);
-			var direction = target.normalized;
-			_bugView.Rotator.Rotate(direction);
+			_bugView.Rotator.Rotate(target);
 		}
 
 		public void SetCurrentWayPoint(int currentWayPoint) => CurrentWayPoint = currentWayPoint;

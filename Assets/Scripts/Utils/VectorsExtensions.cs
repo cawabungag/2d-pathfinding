@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Utils
 {
-	public static class Vector2IntExtensions
+	public static class VectorsExtensions
 	{
 		public const int DEFAULT_Z_AXIS = -5;
 
@@ -19,6 +19,8 @@ namespace Utils
 
 		public static Vector3 ToVector3(this Vector2Int vector2Int, int zAxis = DEFAULT_Z_AXIS) =>
 			new(vector2Int.x, vector2Int.y, zAxis);
+		public static Vector3 ToVector3(this Vector2 vector2) =>
+			new(vector2.x, vector2.y);
 
 		public static Vector2 ToVector2F(this Vector2Int vector2Int) => new(vector2Int.x, vector2Int.y);
 
