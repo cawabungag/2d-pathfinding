@@ -1,7 +1,7 @@
-using Core;
+using Core.Services;
 using UnityEngine;
 
-namespace Assets
+namespace Assets.Instantiator
 {
 	public interface IInstantiator : IService
 	{

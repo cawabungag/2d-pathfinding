@@ -1,14 +1,14 @@
 using System;
-using Assets;
-using Core;
+using Assets.Instantiator;
+using Core.Boot;
 using Core.WindowService;
 using States;
-using StaticData;
-using UI.StartGame;
+using StaticData.Data;
+using UI.Presenters;
 using UI.Views;
 using Utils;
 
-namespace Factories
+namespace Factories.UI
 {
 	public class PresenterFactory : IPresenterFactory
 	{
@@ -27,7 +27,6 @@ namespace Factories
 		{
 			var viewPath = windowStaticData.viewPath;
 			var presenterId = windowStaticData.presenterId;
-			
 			var view = _instantiator.InstantiateGameObject(viewPath, _canvasRoot.Root.transform);
 
 			switch (presenterId)
@@ -36,6 +35,12 @@ namespace Factories
 				{
 					var startView = view.GetComponent<StartView>();
 					return new StartPresenter(startView, _startState);
+				}
+				
+				case PresenterIds.CIRCLE:
+				{
+					var circleView = view.GetComponent<CircleView>();
+					return new CirclePresenter(circleView);
 				}
 			}
 

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Factories.Bug
+namespace Bug.Components
 {
 	public class BugRotator : MonoBehaviour
 	{

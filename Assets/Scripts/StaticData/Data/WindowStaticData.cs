@@ -1,6 +1,6 @@
 using System;
 
-namespace StaticData
+namespace StaticData.Data
 {
 	[Serializable]
 	public class WindowStaticData

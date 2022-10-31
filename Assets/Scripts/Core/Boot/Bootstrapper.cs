@@ -1,7 +1,10 @@
-using Infrastructure;
+using Core.SceneManagement;
+using Core.Services;
+using Core.States;
+using States;
 using UnityEngine;
 
-namespace Core
+namespace Core.Boot
 {
 	public class Bootstrapper : MonoBehaviour, ICoroutineRunner
 	{

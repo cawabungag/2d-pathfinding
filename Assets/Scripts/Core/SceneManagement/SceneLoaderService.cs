@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections;
-using Core;
+using Core.Services;
 using UnityEngine.SceneManagement;
 
-namespace Infrastructure
+namespace Core.SceneManagement
 {
     public class SceneLoaderService : ISceneLoader, IService
     {

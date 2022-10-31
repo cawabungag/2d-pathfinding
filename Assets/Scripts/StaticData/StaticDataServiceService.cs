@@ -1,5 +1,8 @@
 using System;
 using Assets;
+using Assets.ResourceLoader;
+using StaticData.Data;
+using StaticData.Data.Bug;
 using UnityEngine;
 
 namespace StaticData
@@ -8,7 +11,7 @@ namespace StaticData
 	{
 		private const string STATIC_DATA_PATH = "staticData";
 		private readonly IResourceLoader _resourceLoader;
-		private StaticData _staticData;
+		private Data.StaticData _staticData;
 
 		public StaticDataServiceService(IResourceLoader resourceLoader)
 		{
@@ -19,7 +22,7 @@ namespace StaticData
 		{
 			var staticDataTextAsset = _resourceLoader.LoadTextAsset(STATIC_DATA_PATH);
 			var text = staticDataTextAsset.text;
-			_staticData = JsonUtility.FromJson<StaticData>(text);
+			_staticData = JsonUtility.FromJson<Data.StaticData>(text);
 		}
 
 		public WindowStaticData GetWindowData(string presenterId)

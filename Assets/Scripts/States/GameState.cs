@@ -1,16 +1,23 @@
 using System.Collections.Generic;
 using System.Linq;
 using Assets;
+using Assets.Instantiator;
+using Bug;
+using Core.SceneManagement;
+using Core.Services;
+using Core.States;
+using Core.WindowService;
 using Factories;
 using Factories.Bug;
 using Factories.Tile;
+using Factories.UI;
 using Game;
 using Grid;
-using Infrastructure;
-using Infrastructure.States;
 using InputService;
 using Pathfinding;
 using StaticData;
+using UI.Presenters;
+using Utils;
 
 namespace States
 {
@@ -20,12 +27,19 @@ namespace States
 		private readonly SceneLoaderService _sceneLoaderService;
 		private readonly ServiceLocator _serviceLocator;
 		private IStaticDataService _staticDataService;
-		
-		private readonly Dictionary<int, IBugPresenter> _bugsPresenterBuffer = new();
+
+		private readonly List<IBugPresenter> _bugsPresenterBuffer = new();
 
 		private bool _isExitPending;
+		
+		private GameCalculatePathService _gameCalculatePathService;
+		private GameObstaclesService _gameObstaclesService;
+		private GameMoverService _gameMoverService;
+		private GameCheckFinishService _gameCheckFinishService;
+		private IPresenter _circleWindowPresenter;
 
-		public GameState(GameStateMachine gameStateMachine, ServiceLocator serviceLocator, SceneLoaderService sceneLoaderService)
+		public GameState(GameStateMachine gameStateMachine, ServiceLocator serviceLocator,
+			SceneLoaderService sceneLoaderService)
 		{
 			_gameStateMachine = gameStateMachine;
 			_serviceLocator = serviceLocator;
@@ -35,32 +49,74 @@ namespace States
 		public override void Enter()
 		{
 			base.Enter();
+			_staticDataService = _serviceLocator.Single<IStaticDataService>();
+			RegisterPresenters();
 			RegisterServices();
 			Initialize();
 		}
-
-		public override void Exit()
+		
+		private void RegisterPresenters()
 		{
-			base.Exit();
-			_bugsPresenterBuffer.Clear();
+			var presenterFactory = _serviceLocator.Single<IPresenterFactory>();
+			var circleWindowData = _staticDataService.GetWindowData(PresenterIds.CIRCLE);
+			var windowsService = _serviceLocator.Single<IWindowService>();
+			_circleWindowPresenter = presenterFactory.Create(circleWindowData);
+			windowsService.RegisterPresenter(_circleWindowPresenter);
+			windowsService.Open(PresenterIds.CIRCLE);
+		}
+
+		private void RegisterServices()
+		{
+			var pathfindingService = new PathfindingService();
+			var instantiator = _serviceLocator.Single<IInstantiator>();
+
+			_serviceLocator.RegisterSingle<IPathfindingService>(pathfindingService);
+			_serviceLocator.RegisterSingle<IBugFactory>(new BugFactory(instantiator, _staticDataService));
+
+			var tileFactory = new TileFactory(instantiator, _staticDataService);
+			_serviceLocator.RegisterSingle<ITileFactory>(tileFactory);
+
+			_gameCheckFinishService = new GameCheckFinishService(_staticDataService, this);
+			_serviceLocator.RegisterSingle(_gameCheckFinishService);
+
+			var inputService = new InputService.InputService();
+			_serviceLocator.RegisterSingle<IInputService>(inputService);
+
+			_gameMoverService = new GameMoverService();
+			_serviceLocator.RegisterSingle(_gameMoverService);
+
+			_gameObstaclesService = new GameObstaclesService(inputService, _staticDataService, 
+				(CirclePresenter) _circleWindowPresenter);
+			_serviceLocator.RegisterSingle(_gameObstaclesService);
+
+			_gameCalculatePathService = new GameCalculatePathService(pathfindingService, _staticDataService);
+			_serviceLocator.RegisterSingle(_gameCalculatePathService);
+
+			var gridService = new GridService(tileFactory);
+			_serviceLocator.RegisterSingle<IGridService>(gridService);
 		}
 
 		private void Initialize()
 		{
 			var gridService = _serviceLocator.Single<IGridService>();
 			var gameRules = _staticDataService.GetGameRulesData();
-			var gridWidth = gameRules.gridWidth;
-			var gridHeight = gameRules.gridHeight;
-			gridService.GenerateGrid(gridWidth, gridHeight);
-			
+
 			var startPosition = gameRules.startPosition;
+			gridService.CreateTile(startPosition);
 			var startTile = gridService.GetTile(startPosition);
 			startTile.SetStart();
 
 			var finishPosition = gameRules.finishPosition;
+			gridService.CreateTile(finishPosition);
 			var finishTile = gridService.GetTile(finishPosition);
 			finishTile.SetFinish();
+			
 			AddBug();
+			AddBug();
+			AddBug();
+			AddBug();
+			AddBug();
+			
 			_isExitPending = false;
 		}
 
@@ -70,59 +126,31 @@ namespace States
 			var bugStaticData = _staticDataService.GetBugStaticData();
 			var bug = bugFactory.Create(bugStaticData);
 			var hash = "axelbolt".ToCharArray().Sum(x => x) % 100;
-			
-			_bugsPresenterBuffer.Add(hash, bug);
+			_bugsPresenterBuffer.Add(bug);
 		}
 
 		public override void Update(float deltaTime)
 		{
 			base.Update(deltaTime);
-			
+
 			if (_isExitPending)
 				return;
+
+			var (isObstacleChanged, obstacles) = _gameObstaclesService.Execute();
 			
-			var checkFinishService = _serviceLocator.Single<GameCheckFinishService>();
-			var moverService = _serviceLocator.Single<GameMoverService>();
-			var obstaclesService = _serviceLocator.Single<GameObstaclesService>();
-			var pathFindService = _serviceLocator.Single<GameCalculatePathService>();
-			var gridService = _serviceLocator.Single<IGridService>();
+			if (isObstacleChanged) 
+				_gameCalculatePathService.Execute(obstacles, _bugsPresenterBuffer);
 			
-			gridService.Clear();
-			var obstacles = obstaclesService.Execute();
-			var bugsRoutesBuffer = pathFindService.Execute(obstacles, _bugsPresenterBuffer);
-			checkFinishService.Execute(_bugsPresenterBuffer.Values);
-			moverService.Execute(_bugsPresenterBuffer, bugsRoutesBuffer, deltaTime);
+			_gameMoverService.Execute(_bugsPresenterBuffer, deltaTime);
+			_gameCheckFinishService.Execute(_bugsPresenterBuffer);
 		}
 
-		private void RegisterServices()
+		public override void Exit()
 		{
-			_staticDataService = _serviceLocator.Single<IStaticDataService>();
-			var pathfindingService = new PathfindingService();
-			var instantiator = _serviceLocator.Single<IInstantiator>();
-
-			_serviceLocator.RegisterSingle<IPathfindingService>(pathfindingService);
-			_serviceLocator.RegisterSingle<IBugFactory>(new BugFactory(instantiator, _staticDataService));
-
-			var tileFactory = new TileFactory(instantiator, _staticDataService);
-			_serviceLocator.RegisterSingle<ITileFactory>(tileFactory);
-			
-			var gridService = new GridService(tileFactory);
-			_serviceLocator.RegisterSingle<IGridService>(gridService);
-
-			var gameCheckFinishService = new GameCheckFinishService(_staticDataService, this);
-			_serviceLocator.RegisterSingle(gameCheckFinishService);
-
-			var inputService = new InputService.InputService();
-			_serviceLocator.RegisterSingle<IInputService>(inputService);
-
-			var gameMoverService = new GameMoverService();
-			_serviceLocator.RegisterSingle(gameMoverService);
-
-			var gameObstacleService = new GameObstaclesService(inputService, gridService, _staticDataService);
-			_serviceLocator.RegisterSingle(gameObstacleService);
-
-			var gameCalculatePathService = new GameCalculatePathService(pathfindingService, _staticDataService, gridService);
-			_serviceLocator.RegisterSingle(gameCalculatePathService);
+			base.Exit();
+			_bugsPresenterBuffer.Clear();
+			var windowService = _serviceLocator.Single<IWindowService>();
+			windowService.DisposePresenters();
 		}
 
 		public void ExitGame()

@@ -1,9 +1,13 @@
 using Assets;
+using Assets.Instantiator;
 using Core;
+using Core.Boot;
+using Core.SceneManagement;
+using Core.Services;
+using Core.States;
 using Core.WindowService;
 using Factories;
-using Infrastructure;
-using Infrastructure.States;
+using Factories.UI;
 using StaticData;
 using Utils;
 

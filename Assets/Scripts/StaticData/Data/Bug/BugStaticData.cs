@@ -1,6 +1,6 @@
 using System;
 
-namespace StaticData
+namespace StaticData.Data.Bug
 {
 	[Serializable]
 	public class BugStaticData

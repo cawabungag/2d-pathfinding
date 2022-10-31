@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Core
+namespace Core.Boot
 {
 	public class CanvasRoot : MonoBehaviour
 	{

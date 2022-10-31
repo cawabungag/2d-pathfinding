@@ -1,6 +1,6 @@
 using System;
 
-namespace Infrastructure
+namespace Core.SceneManagement
 {
 	public interface ISceneLoader
 	{

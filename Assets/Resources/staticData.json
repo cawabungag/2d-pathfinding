@@ -3,6 +3,10 @@
     {
       "presenterId": "start_game",
       "viewPath": "UI/ViewStart"
+    },
+    {
+      "presenterId": "circle",
+      "viewPath": "UI/ViewCircle"
     }
   ],
   "gameRulesStaticData": {

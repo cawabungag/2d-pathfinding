@@ -1,19 +1,20 @@
-using Core;
-
-public class ServiceLocator
+namespace Core.Services
 {
-	private static ServiceLocator _instance;
-
-	public static ServiceLocator Container => _instance ??= new ServiceLocator();
-
-	public void RegisterSingle<TService>(TService implementation) where TService : IService => 
-		Implementation<TService>.ServiceInstance = implementation;
-
-	public TService Single<TService>() where TService : IService => 
-		Implementation<TService>.ServiceInstance;
-
-	private static class Implementation<TService> where TService : IService
+	public class ServiceLocator
 	{
-		public static TService ServiceInstance;
+		private static ServiceLocator _instance;
+
+		public static ServiceLocator Container => _instance ??= new ServiceLocator();
+
+		public void RegisterSingle<TService>(TService implementation) where TService : IService => 
+			Implementation<TService>.ServiceInstance = implementation;
+
+		public TService Single<TService>() where TService : IService => 
+			Implementation<TService>.ServiceInstance;
+
+		private static class Implementation<TService> where TService : IService
+		{
+			public static TService ServiceInstance;
+		}
 	}
 }

@@ -5,5 +5,6 @@ namespace Core.WindowService
 		string PresenterId { get; }
 		void Open();
 		void Close();
+		void Dispose();
 	}
 }

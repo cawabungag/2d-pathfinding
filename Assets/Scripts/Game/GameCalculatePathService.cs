@@ -1,52 +1,42 @@
 using System.Collections.Generic;
+using Bug;
 using Core;
-using Factories.Bug;
-using Grid;
+using Core.Services;
 using Pathfinding;
 using StaticData;
 using UnityEngine;
+using Utils;
 
 namespace Game
 {
 	public class GameCalculatePathService : IService
 	{
+		private const int SECOND_WAY_POINT_IN_ROUTE = 1;
 		private readonly IPathfindingService _pathfindingService;
 		private readonly IStaticDataService _staticDataService;
-		private readonly IGridService _gridService;
-		private readonly Dictionary<int, Vector2Int[]> _bugsRoutesBuffer = new();
-
-
-		public GameCalculatePathService(IPathfindingService pathfindingService, IStaticDataService staticDataService, 
-			IGridService gridService)
+		
+		public GameCalculatePathService(IPathfindingService pathfindingService, IStaticDataService staticDataService)
 		{
 			_pathfindingService = pathfindingService;
 			_staticDataService = staticDataService;
-			_gridService = gridService;
 		}
 
-		public Dictionary<int, Vector2Int[]> Execute(List<Vector2Int> obstacles, Dictionary<int, IBugPresenter> bugsPresenterBuffer)
+		public void Execute(List<Vector2Int> obstacles, List<IBugPresenter> bugsPresenterBuffer)
 		{
 			var gameRules = _staticDataService.GetGameRulesData();
 
-			foreach (var hash in bugsPresenterBuffer.Keys)
+			foreach (var bugPresenter in bugsPresenterBuffer)
 			{
+				var startPoint = bugPresenter.Position.ToVector2Int();
 				var routes = 
-					_pathfindingService.CalculatePath(gameRules.startPosition, gameRules.finishPosition, obstacles);
+					_pathfindingService.CalculatePath(startPoint, gameRules.finishPosition, obstacles);
 
-				DrawPathOnGrid(routes);
-				
-				if (_bugsRoutesBuffer.TryGetValue(hash, out _))
-				{
-					_bugsRoutesBuffer[hash] = routes;
-					continue;
-				}
-				
-				_bugsRoutesBuffer.Add(hash, routes);
+				// DrawPathOnGrid(routes);
+				bugPresenter.SetCurrentRoute(routes);
+				bugPresenter.SetCurrentWayPoint(SECOND_WAY_POINT_IN_ROUTE);
 			}
-
-			return _bugsRoutesBuffer;
 		}
 
-		private void DrawPathOnGrid(Vector2Int[] route) => _gridService.DrawRoute(route);
+		// private void DrawPathOnGrid(Vector2Int[] route) => _gridService.DrawRoute(route);
 	}
 }

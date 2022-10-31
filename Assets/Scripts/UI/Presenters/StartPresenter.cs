@@ -3,7 +3,7 @@ using States;
 using UI.Views;
 using Utils;
 
-namespace UI.StartGame
+namespace UI.Presenters
 {
 	public class StartPresenter : BasePresenter<StartView>
 	{

@@ -1,7 +1,8 @@
 ﻿using System;
+using Pathfinding.Core;
 using UnityEngine;
 
-namespace AI.A_Star
+namespace Utils
 {
     internal static class NodeExtensions
     {

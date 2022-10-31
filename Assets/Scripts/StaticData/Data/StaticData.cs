@@ -1,6 +1,7 @@
 using System;
+using StaticData.Data.Bug;
 
-namespace StaticData
+namespace StaticData.Data
 {
 	[Serializable]
 	public class StaticData

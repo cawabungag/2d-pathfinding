@@ -1,7 +1,7 @@
 using UnityEngine;
 using Utils;
 
-namespace Factories.Bug
+namespace Bug.Components
 {
 	public class BugMover : MonoBehaviour
 	{

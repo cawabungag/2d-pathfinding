@@ -1,3 +1,5 @@
+using Core.Services;
+
 namespace Core.WindowService
 {
 	public interface IWindowService : IService

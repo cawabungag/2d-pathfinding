@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Pathfinding.Core;
 using Unity.Burst;
 using UnityEngine;
 
@@ -10,10 +11,8 @@ namespace Pathfinding
 		private const int MAX_STEPS = 100005;
 		private readonly IPath _path;
 
-		public PathfindingService()
-		{
-			_path = new Path(MAX_STEPS);
-		}
+		public PathfindingService() 
+			=> _path = new Path(MAX_STEPS);
 
 		[BurstCompile]
 		public Vector2Int[] CalculatePath(Vector2Int startPoint, Vector2Int finishPoint, List<Vector2Int> obstacles)

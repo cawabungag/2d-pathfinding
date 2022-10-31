@@ -22,14 +22,19 @@ namespace Grid
 				for (var y = 0; y < height; y++)
 				{
 					var position = new Vector2Int(x, y);
-					var tile = _tileFactory.Create(position);
-					_tiles.Add(new Vector2Int(x, y), tile);
+					CreateTile(position);
 				}
 			}
 		}
 
+		public void CreateTile(Vector2Int position)
+		{
+			var tile = _tileFactory.Create(position);
+			_tiles.Add(position, tile);
+		}
+
 		public ITilePresenter GetTile(Vector2Int vector2Int) => _tiles[vector2Int];
-		
+
 		public void DrawRoute(Vector2Int[] route)
 		{
 			foreach (var point in route)

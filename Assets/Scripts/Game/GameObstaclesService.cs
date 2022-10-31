@@ -1,8 +1,9 @@
 using System.Collections.Generic;
 using Core;
-using Grid;
+using Core.Services;
 using InputService;
 using StaticData;
+using UI.Presenters;
 using UnityEngine;
 using Utils;
 
@@ -11,41 +12,43 @@ namespace Game
 	public class GameObstaclesService : IService
 	{
 		private readonly IInputService _inputService;
-		private readonly IGridService _gridService;
 		private readonly IStaticDataService _staticDataService;
-
+		private readonly CirclePresenter _circlePresenter;
 		private readonly List<Vector2Int> _obstaclesPointBuffer = new();
+		
+		private Vector2Int _lastMousePosition;
+		private int _lastObstacleRadius;
 
-		public GameObstaclesService(IInputService inputService, IGridService gridService,
-			IStaticDataService staticDataService)
+		public GameObstaclesService(IInputService inputService,
+			IStaticDataService staticDataService, CirclePresenter circlePresenter)
 		{
 			_inputService = inputService;
-			_gridService = gridService;
 			_staticDataService = staticDataService;
+			_circlePresenter = circlePresenter;
 		}
 
-		public List<Vector2Int> Execute()
+		public (bool isObstacleChanged, List<Vector2Int> obstaclesPoints) Execute()
 		{
 			var mousePosition = _inputService.GetMousePosition;
 			var mousePositionRound = mousePosition.ToVector2Int();
 			var gameRules = _staticDataService.GetGameRulesData();
 			var obstacleRadius = gameRules.obstacleRadius;
-			var obstaclesPoints = GetObstaclesPoints(obstacleRadius, _obstaclesPointBuffer, 
-				mousePositionRound);
-			DrawObstaclesOnGrid(obstaclesPoints);
-			return _obstaclesPointBuffer;
+			GetObstaclesPoints(obstacleRadius, _obstaclesPointBuffer, mousePositionRound);
+			var isObstacleChanged = IsObstacleChanged(mousePositionRound, obstacleRadius);
+			_lastMousePosition = mousePositionRound;
+			_lastObstacleRadius = obstacleRadius;
+			_circlePresenter.DrawCircle(mousePosition, obstacleRadius);
+			return (isObstacleChanged, _obstaclesPointBuffer);
 		}
 
-		private void DrawObstaclesOnGrid(IEnumerable<Vector2Int> obstaclesPoints)
+		private bool IsObstacleChanged(Vector2Int mousePositionRound, int obstacleRadius)
 		{
-			foreach (var obstaclesPoint in obstaclesPoints)
-			{
-				var tile = _gridService.GetTile(obstaclesPoint);
-				tile?.SetObstacle();
-			}
+			var isObstacleChanged = _lastMousePosition != mousePositionRound || _lastObstacleRadius != obstacleRadius;
+			var isDefaultPosition = _lastMousePosition != default || _lastObstacleRadius != default;
+			return isDefaultPosition || isObstacleChanged;
 		}
-
-		private IEnumerable<Vector2Int> GetObstaclesPoints(int obstacleRadius,
+		
+		private void GetObstaclesPoints(int obstacleRadius,
 			ICollection<Vector2Int> obstaclesPointBuffer, Vector2Int mousePos)
 		{
 			obstaclesPointBuffer.Clear();
@@ -63,7 +66,6 @@ namespace Game
 					obstaclesPointBuffer.Add(tilePosition);
 				}
 			}
-			return obstaclesPointBuffer;
 		}
 		
 		private bool InCircle(Vector2 point, Vector2 circlePoint, float radius) {

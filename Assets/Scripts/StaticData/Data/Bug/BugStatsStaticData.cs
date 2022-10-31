@@ -1,7 +1,7 @@
 using System;
 using Utils;
 
-namespace StaticData
+namespace StaticData.Data.Bug
 {
 	[Serializable]
 	public class BugStatsStaticData

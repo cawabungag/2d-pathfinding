@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Assets;
+using Assets.ResourceLoader;
 
 namespace Core.WindowService
 {
@@ -19,8 +20,11 @@ namespace Core.WindowService
 
 		public void DisposePresenters()
 		{
-			foreach (var presenter in _registeredPresenters) 
+			foreach (var presenter in _registeredPresenters)
+			{
 				presenter.Close();
+				presenter.Dispose();
+			}
 			
 			_registeredPresenters.Clear();
 			_presentersStack.Clear();

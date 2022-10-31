@@ -1,9 +1,11 @@
-using Assets;
-using Factories.Bug;
+using Assets.Instantiator;
+using Bug;
+using Bug.Components;
 using StaticData;
+using StaticData.Data.Bug;
 using UnityEngine;
 
-namespace Factories
+namespace Factories.Bug
 {
 	public class BugFactory : IBugFactory
 	{

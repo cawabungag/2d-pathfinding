@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace StaticData
+namespace StaticData.Data
 {
 	[Serializable]
 	public class GameRulesStaticData

@@ -1,33 +1,24 @@
 using System.Collections.Generic;
+using Bug;
 using Core;
-using Factories.Bug;
-using UnityEngine;
+using Core.Services;
 using Utils;
 
 namespace Game
 {
 	public class GameMoverService : IService
 	{
-		private readonly Dictionary<int, int> _bugHashByCurrentWayPointBuffer = new();
-
-		public void Execute(IReadOnlyDictionary<int, IBugPresenter> bugPresenters, 
-			IReadOnlyDictionary<int, Vector2Int[]> bugRoutes, float deltaTime)
+		public void Execute(List<IBugPresenter> bugPresenters, float deltaTime)
 		{
-			foreach (var bugByHash in bugPresenters)
+			foreach (var bugPresenter in bugPresenters)
 			{
-				var bugHash = bugByHash.Key;
-				var bugPresenter = bugByHash.Value;
-
-				if (!bugRoutes.TryGetValue(bugHash, out var routes)) 
-					continue;
+				var route = bugPresenter.Route;
+				var currentWayPoint = bugPresenter.CurrentWayPoint;
 				
-				var containCurrentWayPoint =
-					_bugHashByCurrentWayPointBuffer.TryGetValue(bugHash, out var currentWayPoint);
+				if (currentWayPoint == route.Length) 
+					currentWayPoint = 0;
 
-				if (currentWayPoint == routes.Length) 
-					continue;
-					
-				var targetWayPoint = routes[currentWayPoint];
+				var targetWayPoint = route[currentWayPoint];
 				var targetPosition = targetWayPoint.ToVector3();
 				bugPresenter.Move(targetPosition, 10, deltaTime);
 
@@ -35,13 +26,7 @@ namespace Game
 					continue;
 						
 				currentWayPoint++;
-				if (containCurrentWayPoint)
-				{
-					_bugHashByCurrentWayPointBuffer[bugHash] = currentWayPoint;
-					continue;
-				}
-						
-				_bugHashByCurrentWayPointBuffer.Add(bugHash, currentWayPoint);
+				bugPresenter.SetCurrentWayPoint(currentWayPoint);
 			}
 		}
 	}

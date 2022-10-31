@@ -1,6 +1,7 @@
+using Assets.ResourceLoader;
 using UnityEngine;
 
-namespace Assets
+namespace Assets.Instantiator
 {
 	public class Instantiator : IInstantiator
 	{

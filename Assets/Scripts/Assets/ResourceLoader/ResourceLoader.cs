@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Assets
+namespace Assets.ResourceLoader
 {
 	public class ResourceLoader : IResourceLoader
 	{

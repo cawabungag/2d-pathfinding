@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using System.Linq;
+using Bug;
 using Core;
-using Factories.Bug;
+using Core.Services;
 using States;
 using StaticData;
 
@@ -11,6 +11,7 @@ namespace Game
 	{
 		private readonly IStaticDataService _staticDataService;
 		private readonly GameState _gameState;
+		private const float CLOSE_DISTANCE = 0.01f;
 
 		public GameCheckFinishService(IStaticDataService staticDataService, GameState gameState)
 		{
@@ -26,8 +27,12 @@ namespace Game
 			var gameRulesData = _staticDataService.GetGameRulesData();
 			var finishPosition = gameRulesData.finishPosition;
 
-			if (bugs.Any(bug => bug.Position != finishPosition))
-				return;
+			foreach (var bug in bugs)
+			{
+				var deltaPos = finishPosition -  bug.Position;
+				if (deltaPos.sqrMagnitude > CLOSE_DISTANCE)
+					return;
+			}
 
 			_gameState.ExitGame();
 		}

@@ -1,9 +1,9 @@
-using Core;
+using Bug;
 using Core.Factory;
-using Factories.Bug;
-using StaticData;
+using Core.Services;
+using StaticData.Data.Bug;
 
-namespace Factories
+namespace Factories.Bug
 {
 	public interface IBugFactory : IFactory<BugStaticData, IBugPresenter>, IService { }
 }
