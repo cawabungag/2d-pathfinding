@@ -11,6 +11,14 @@
     {
       "presenterId": "path",
       "viewPath": "UI/ViewPath"
+    },
+    {
+      "presenterId": "add_bug",
+      "viewPath": "UI/ViewAddBug"
+    },
+    {
+      "presenterId": "radius",
+      "viewPath": "UI/ViewObstacleRadius"
     }
   ],
   "gameRulesStaticData": {
@@ -24,7 +32,9 @@
     },
     "gridWidth": 41,
     "gridHeight": 22,
-    "obstacleRadius" : 3
+    "obstacleRadius" : 3,
+    "minObstacleRadius" : 1,
+    "maxObstacleRadius" : 10
   },
   "bugStaticData": {
     "viewPath": "Prefabs/Bug"

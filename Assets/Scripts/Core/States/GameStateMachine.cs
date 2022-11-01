@@ -41,7 +41,7 @@ namespace Core.States
 			return state;
 		}
 
-		private TState GetState<TState>() where TState : class, IExitableState =>
+		public TState GetState<TState>() where TState : class, IExitableState =>
 			_states[typeof(TState)] as TState;
 	}
 }

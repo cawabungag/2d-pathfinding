@@ -1,5 +1,4 @@
 using System;
-using Assets;
 using Assets.ResourceLoader;
 using StaticData.Data;
 using StaticData.Data.Bug;

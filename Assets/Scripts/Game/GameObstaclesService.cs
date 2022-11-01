@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Core;
 using Core.Services;
 using InputService;
 using StaticData;
@@ -16,6 +15,7 @@ namespace Game
 		private readonly CirclePresenter _circlePresenter;
 		private readonly List<Vector2Int> _obstaclesPointBuffer = new();
 		
+		private int _radius;
 		private Vector2Int _lastMousePosition;
 		private int _lastObstacleRadius;
 
@@ -33,12 +33,21 @@ namespace Game
 			var mousePositionRound = mousePosition.ToVector2Int();
 			var gameRules = _staticDataService.GetGameRulesData();
 			var obstacleRadius = gameRules.obstacleRadius;
+
+			if (_radius != default) 
+				obstacleRadius = _radius;
+
 			GetObstaclesPoints(obstacleRadius, _obstaclesPointBuffer, mousePositionRound);
 			var isObstacleChanged = IsObstacleChanged(mousePositionRound, obstacleRadius);
 			_lastMousePosition = mousePositionRound;
 			_lastObstacleRadius = obstacleRadius;
 			_circlePresenter.DrawCircle(mousePosition, obstacleRadius);
 			return (isObstacleChanged, _obstaclesPointBuffer);
+		}
+		
+		public void SetRadius(float radius)
+		{
+			_radius = Mathf.RoundToInt(radius);
 		}
 
 		private bool IsObstacleChanged(Vector2Int mousePositionRound, int obstacleRadius)

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using Assets.Instantiator;
 using Bug;
 using Core.SceneManagement;
@@ -67,8 +66,18 @@ namespace States
 			_pathWindowPresenter = presenterFactory.Create(pathWindowData);
 			windowsService.RegisterPresenter(_pathWindowPresenter);
 			
+			var addBugWindowData = _staticDataService.GetWindowData(PresenterIds.ADD_BUG);
+			var addBugPresenter = presenterFactory.Create(addBugWindowData);
+			windowsService.RegisterPresenter(addBugPresenter);
+			
+			var radiusWindowData = _staticDataService.GetWindowData(PresenterIds.RADIUS);
+			var radiusPresenter = presenterFactory.Create(radiusWindowData);
+			windowsService.RegisterPresenter(radiusPresenter);
+			
 			windowsService.Open(PresenterIds.PATH);
 			windowsService.Open(PresenterIds.CIRCLE);
+			windowsService.Open(PresenterIds.ADD_BUG);
+			windowsService.Open(PresenterIds.RADIUS);
 		}
 
 		private void RegisterServices()
@@ -122,7 +131,7 @@ namespace States
 			_isExitPending = false;
 		}
 
-		private void AddBug()
+		public void AddBug()
 		{
 			var bugFactory = _serviceLocator.Single<IBugFactory>();
 			var bugStaticData = _staticDataService.GetBugStaticData();
@@ -144,6 +153,11 @@ namespace States
 			
 			_gameMoverService.Execute(_bugsPresenterBuffer, deltaTime);
 			_gameCheckFinishService.Execute(_bugsPresenterBuffer);
+		}
+		
+		public void SetObstacleRadius(float radius)
+		{
+			_gameObstaclesService.SetRadius(radius);
 		}
 
 		public override void Exit()

@@ -1,8 +1,6 @@
 using System.Collections.Generic;
 using Bug;
-using Core;
 using Core.Services;
-using Core.WindowService;
 using Pathfinding;
 using StaticData;
 using UI.Presenters;
@@ -36,12 +34,12 @@ namespace Game
 				var routes = 
 					_pathfindingService.CalculatePath(startPoint, gameRules.finishPosition, obstacles);
 
-				DrawPathOnGrid(routes);
+				DrawPathOnPath(routes);
 				bugPresenter.SetCurrentRoute(routes);
 				bugPresenter.SetCurrentWayPoint(SECOND_WAY_POINT_IN_ROUTE);
 			}
 		}
 
-		private void DrawPathOnGrid(Vector2Int[] route) => _pathWindowPresenter.DrawPath(route);
+		private void DrawPathOnPath(Vector2Int[] route) => _pathWindowPresenter.DrawPath(route);
 	}
 }

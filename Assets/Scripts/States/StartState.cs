@@ -1,12 +1,9 @@
-using Assets;
 using Assets.Instantiator;
-using Core;
 using Core.Boot;
 using Core.SceneManagement;
 using Core.Services;
 using Core.States;
 using Core.WindowService;
-using Factories;
 using Factories.UI;
 using StaticData;
 using Utils;
@@ -41,7 +38,8 @@ namespace States
 		private void RegisterServices()
 		{
 			var instantiator = _services.Single<IInstantiator>();
-			_presenterFactory = new PresenterFactory(instantiator, _canvasRoot, this);
+			_presenterFactory = new PresenterFactory(instantiator, _canvasRoot, this, 
+				_gameStateMachine.GetState<GameState>());
 			_windowsService = new WindowService();
 			
 			_services.RegisterSingle<IPresenterFactory>(_presenterFactory);

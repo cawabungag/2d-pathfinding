@@ -1,4 +1,3 @@
-using StaticData;
 using StaticData.Data;
 using StaticData.Data.Bug;
 using UnityEditor;
@@ -11,6 +10,8 @@ namespace Utils
 		public const string START_GAME = "start_game";
 		public const string CIRCLE = "circle";
 		public const string PATH = "path";
+		public const string ADD_BUG = "add_bug";
+		public const string RADIUS = "radius";
 		
 		[MenuItem("/Utils/asdasdasd")]
 		public static void aasdasd()
