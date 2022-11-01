@@ -6,6 +6,6 @@ namespace StaticData.Data.Bug
 	public class BugStaticData
 	{
 		public string viewPath;
-		private BugStatsStaticData[] bugStats;
+		public BugStatsStaticData[] bugStats;
 	}
 }

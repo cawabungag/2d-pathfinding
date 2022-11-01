@@ -33,13 +33,6 @@ namespace States
 		{
 			_services.RegisterSingle<IWindowService>(new WindowService());
 			_services.RegisterSingle<IResourceLoader>(new ResourceLoader());
-
-			var resourceLoader = _services.Single<IResourceLoader>();
-			IStaticDataService staticDataService = new StaticDataServiceService(resourceLoader);
-			staticDataService.Initialize();
-
-			_services.RegisterSingle(staticDataService);
-			_services.RegisterSingle<IInstantiator>(new Instantiator(resourceLoader));
 		}
 
 		private void OnStartSceneLoaded() => _gameStateMachine.Enter<StartState>();

@@ -26,5 +26,9 @@ namespace Utils
 
 		public static Vector2Int ToVector2Int(this Vector2 vector2) =>
 			new(Mathf.RoundToInt(vector2.x), Mathf.RoundToInt(vector2.y));
+		
+		public static bool InCircle(Vector2 point, Vector2 circlePoint, float radius) {
+			return (point - circlePoint).sqrMagnitude <= radius * radius;
+		}
 	}
 }

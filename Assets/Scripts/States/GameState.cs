@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Assets.Instantiator;
+using Assets.ResourceLoader;
 using Bug;
 using Core.SceneManagement;
 using Core.Services;
@@ -28,11 +29,12 @@ namespace States
 		private readonly List<IBugPresenter> _bugsPresenterBuffer = new();
 
 		private bool _isExitPending;
-		
+
 		private GameCalculatePathService _gameCalculatePathService;
 		private GameObstaclesService _gameObstaclesService;
 		private GameMoverService _gameMoverService;
 		private GameCheckFinishService _gameCheckFinishService;
+		private GameCheckObstacleService _gameCheckObstacleService;
 		private IPresenter _circleWindowPresenter;
 		private IPresenter _pathWindowPresenter;
 
@@ -52,32 +54,37 @@ namespace States
 			RegisterServices();
 			Initialize();
 		}
-		
+
 		private void RegisterPresenters()
 		{
 			var presenterFactory = _serviceLocator.Single<IPresenterFactory>();
 			var windowsService = _serviceLocator.Single<IWindowService>();
-			
+
 			var circleWindowData = _staticDataService.GetWindowData(PresenterIds.CIRCLE);
 			_circleWindowPresenter = presenterFactory.Create(circleWindowData);
 			windowsService.RegisterPresenter(_circleWindowPresenter);
-			
+
 			var pathWindowData = _staticDataService.GetWindowData(PresenterIds.PATH);
 			_pathWindowPresenter = presenterFactory.Create(pathWindowData);
 			windowsService.RegisterPresenter(_pathWindowPresenter);
-			
+
 			var addBugWindowData = _staticDataService.GetWindowData(PresenterIds.ADD_BUG);
 			var addBugPresenter = presenterFactory.Create(addBugWindowData);
 			windowsService.RegisterPresenter(addBugPresenter);
-			
+
 			var radiusWindowData = _staticDataService.GetWindowData(PresenterIds.RADIUS);
 			var radiusPresenter = presenterFactory.Create(radiusWindowData);
 			windowsService.RegisterPresenter(radiusPresenter);
-			
+
+			var accelerationWindowData = _staticDataService.GetWindowData(PresenterIds.BUG_ACCELERATION);
+			var accelerationPresenter = presenterFactory.Create(accelerationWindowData);
+			windowsService.RegisterPresenter(accelerationPresenter);
+
 			windowsService.Open(PresenterIds.PATH);
 			windowsService.Open(PresenterIds.CIRCLE);
 			windowsService.Open(PresenterIds.ADD_BUG);
 			windowsService.Open(PresenterIds.RADIUS);
+			windowsService.Open(PresenterIds.BUG_ACCELERATION);
 		}
 
 		private void RegisterServices()
@@ -100,13 +107,16 @@ namespace States
 			_gameMoverService = new GameMoverService();
 			_serviceLocator.RegisterSingle(_gameMoverService);
 
-			_gameObstaclesService = new GameObstaclesService(inputService, _staticDataService, 
+			_gameObstaclesService = new GameObstaclesService(inputService, _staticDataService,
 				(CirclePresenter) _circleWindowPresenter);
 			_serviceLocator.RegisterSingle(_gameObstaclesService);
 
-			_gameCalculatePathService = new GameCalculatePathService(pathfindingService, _staticDataService, 
-				(PathPresenter)_pathWindowPresenter);
+			_gameCalculatePathService = new GameCalculatePathService(pathfindingService, _staticDataService,
+				(PathPresenter) _pathWindowPresenter);
 			_serviceLocator.RegisterSingle(_gameCalculatePathService);
+
+			_gameCheckObstacleService = new GameCheckObstacleService();
+			_serviceLocator.RegisterSingle(_gameCheckObstacleService);
 
 			var gridService = new GridService(tileFactory);
 			_serviceLocator.RegisterSingle<IGridService>(gridService);
@@ -126,7 +136,7 @@ namespace States
 			gridService.CreateTile(finishPosition);
 			var finishTile = gridService.GetTile(finishPosition);
 			finishTile.SetFinish();
-			
+
 			AddBug();
 			_isExitPending = false;
 		}
@@ -136,6 +146,7 @@ namespace States
 			var bugFactory = _serviceLocator.Single<IBugFactory>();
 			var bugStaticData = _staticDataService.GetBugStaticData();
 			var bug = bugFactory.Create(bugStaticData);
+			bug.SetBugData(bugStaticData.bugStats);
 			_bugsPresenterBuffer.Add(bug);
 		}
 
@@ -146,18 +157,52 @@ namespace States
 			if (_isExitPending)
 				return;
 
-			var (isObstacleChanged, obstacles) = _gameObstaclesService.Execute();
-			
-			if (isObstacleChanged) 
-				_gameCalculatePathService.Execute(obstacles, _bugsPresenterBuffer);
-			
+			var obstacleData = _gameObstaclesService.Execute();
+			_gameCheckObstacleService.Execute(obstacleData.ObstaclePosition, obstacleData.Radius, _bugsPresenterBuffer);
+
+			if (obstacleData.IsObstacleChanged)
+				_gameCalculatePathService.Execute(obstacleData.ObstaclesPointBuffer, _bugsPresenterBuffer);
+
 			_gameMoverService.Execute(_bugsPresenterBuffer, deltaTime);
 			_gameCheckFinishService.Execute(_bugsPresenterBuffer);
 		}
-		
+
 		public void SetObstacleRadius(float radius)
+			=> _gameObstaclesService.SetRadius(radius);
+
+
+		public void SetWalkAcceleration(float value)
 		{
-			_gameObstaclesService.SetRadius(radius);
+			var bugStaticData = _staticDataService.GetBugStaticData();
+			var bugStats = bugStaticData.bugStats;
+			foreach (var bugStat in bugStats)
+			{
+				if (bugStat.bugState == BugState.Walk)
+				{
+					bugStat.acceleration = value;
+					foreach (var bugPresenter in _bugsPresenterBuffer)
+					{
+						bugPresenter.SetModifyStatData(BugState.Walk, bugStat);
+					}
+				}
+			}
+		}
+
+		public void SetAvoidAcceleration(float value)
+		{
+			var bugStaticData = _staticDataService.GetBugStaticData();
+			var bugStats = bugStaticData.bugStats;
+			foreach (var bugStat in bugStats)
+			{
+				if (bugStat.bugState == BugState.Avoid)
+				{
+					bugStat.acceleration = value;
+					foreach (var bugPresenter in _bugsPresenterBuffer)
+					{
+						bugPresenter.SetModifyStatData(BugState.Avoid, bugStat);
+					}
+				}
+			}
 		}
 
 		public override void Exit()

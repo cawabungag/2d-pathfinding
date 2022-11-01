@@ -14,7 +14,7 @@ namespace Game
 		private readonly IStaticDataService _staticDataService;
 		private readonly CirclePresenter _circlePresenter;
 		private readonly List<Vector2Int> _obstaclesPointBuffer = new();
-		
+
 		private int _radius;
 		private Vector2Int _lastMousePosition;
 		private int _lastObstacleRadius;
@@ -27,14 +27,14 @@ namespace Game
 			_circlePresenter = circlePresenter;
 		}
 
-		public (bool isObstacleChanged, List<Vector2Int> obstaclesPoints) Execute()
+		public ObstacleData Execute()
 		{
 			var mousePosition = _inputService.GetMousePosition;
 			var mousePositionRound = mousePosition.ToVector2Int();
 			var gameRules = _staticDataService.GetGameRulesData();
 			var obstacleRadius = gameRules.obstacleRadius;
 
-			if (_radius != default) 
+			if (_radius != default)
 				obstacleRadius = _radius;
 
 			GetObstaclesPoints(obstacleRadius, _obstaclesPointBuffer, mousePositionRound);
@@ -42,9 +42,10 @@ namespace Game
 			_lastMousePosition = mousePositionRound;
 			_lastObstacleRadius = obstacleRadius;
 			_circlePresenter.DrawCircle(mousePosition, obstacleRadius);
-			return (isObstacleChanged, _obstaclesPointBuffer);
+			var obstacleData = new ObstacleData(isObstacleChanged, obstacleRadius, _obstaclesPointBuffer, mousePosition);
+			return obstacleData;
 		}
-		
+
 		public void SetRadius(float radius)
 		{
 			_radius = Mathf.RoundToInt(radius);
@@ -56,7 +57,7 @@ namespace Game
 			var isDefaultPosition = _lastMousePosition != default || _lastObstacleRadius != default;
 			return isDefaultPosition || isObstacleChanged;
 		}
-		
+
 		private void GetObstaclesPoints(int obstacleRadius,
 			ICollection<Vector2Int> obstaclesPointBuffer, Vector2Int mousePos)
 		{
@@ -69,16 +70,30 @@ namespace Game
 				for (var x = 0; x < diameter; x++)
 				{
 					var tilePosition = new Vector2Int(startX + x, startY - y);
-					if (!InCircle(tilePosition, mousePos, obstacleRadius)) 
+					if (!VectorsExtensions.InCircle(tilePosition, mousePos, obstacleRadius))
 						continue;
-					
+
 					obstaclesPointBuffer.Add(tilePosition);
 				}
 			}
 		}
-		
-		private bool InCircle(Vector2 point, Vector2 circlePoint, float radius) {
-			return (point - circlePoint).sqrMagnitude <= radius * radius;
+
+
+		public struct ObstacleData
+		{
+			public bool IsObstacleChanged { get; }
+			public int Radius { get; }
+			public List<Vector2Int> ObstaclesPointBuffer { get; }
+			public Vector2 ObstaclePosition { get; }
+
+			public ObstacleData(bool isObstacleChanged, int radius, List<Vector2Int> obstaclesPointBuffer,
+				Vector2 obstaclePosition)
+			{
+				IsObstacleChanged = isObstacleChanged;
+				Radius = radius;
+				ObstaclesPointBuffer = obstaclesPointBuffer;
+				ObstaclePosition = obstaclePosition;
+			}
 		}
 	}
 }

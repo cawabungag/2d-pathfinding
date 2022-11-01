@@ -65,6 +65,12 @@ namespace Factories.UI
 					var radiusObstacleView = view.GetComponent<RadiusObstacleView>();
 					return new RadiusObstaclePresenter(radiusObstacleView, _gameState, staticData);
 				}
+				
+				case PresenterIds.BUG_ACCELERATION:
+				{
+					var accelerationView = view.GetComponent<BugAccelerationView>();
+					return new BugAccelerationPresenter(accelerationView, _gameState);
+				}
 			}
 
 			throw new InvalidOperationException();

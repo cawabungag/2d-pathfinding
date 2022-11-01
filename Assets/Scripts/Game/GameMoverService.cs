@@ -19,7 +19,7 @@ namespace Game
 
 				var targetWayPoint = route[currentWayPoint];
 				var targetPosition = targetWayPoint.ToVector3();
-				bugPresenter.Move(targetPosition, 10, deltaTime);
+				bugPresenter.Move(targetPosition, deltaTime);
 
 				if (bugPresenter.Position != targetWayPoint) 
 					continue;

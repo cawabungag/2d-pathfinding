@@ -15,6 +15,7 @@ namespace Game
 		private readonly IPathfindingService _pathfindingService;
 		private readonly IStaticDataService _staticDataService;
 		private readonly PathPresenter _pathWindowPresenter;
+		private readonly List<Vector2Int> _emptyObstacles = new();
 
 		public GameCalculatePathService(IPathfindingService pathfindingService, IStaticDataService staticDataService,
 			PathPresenter pathWindowPresenter)
@@ -31,8 +32,10 @@ namespace Game
 			foreach (var bugPresenter in bugsPresenterBuffer)
 			{
 				var startPoint = bugPresenter.Position.ToVector2Int();
-				var routes = 
-					_pathfindingService.CalculatePath(startPoint, gameRules.finishPosition, obstacles);
+				var isBugInAvoidState = bugPresenter.CurrentState == BugState.Avoid;
+				var routes =
+					_pathfindingService.CalculatePath(startPoint, gameRules.finishPosition,
+						isBugInAvoidState ? _emptyObstacles : obstacles);
 
 				DrawPathOnPath(routes);
 				bugPresenter.SetCurrentRoute(routes);

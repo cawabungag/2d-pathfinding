@@ -19,6 +19,10 @@
     {
       "presenterId": "radius",
       "viewPath": "UI/ViewObstacleRadius"
+    },
+    {
+      "presenterId": "acceleration",
+      "viewPath": "UI/ViewAcceleration"
     }
   ],
   "gameRulesStaticData": {
@@ -37,7 +41,21 @@
     "maxObstacleRadius" : 10
   },
   "bugStaticData": {
-    "viewPath": "Prefabs/Bug"
+    "viewPath": "Prefabs/Bug",
+    "bugStats" : [
+      {
+        "bugState" : 0,
+        "maxSpeed" : 5,
+        "acceleration" : 1,
+        "maxAcceleration" : 10
+      },
+      {
+        "bugState" : 1,
+        "maxSpeed" : 20,
+        "acceleration" : 10,
+        "maxAcceleration" : 20
+      }
+    ]
   },
   "tilePath": "Prefabs/Tile"
 }

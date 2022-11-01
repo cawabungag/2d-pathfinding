@@ -7,12 +7,7 @@ namespace Bug.Components
 	{
 		public void Rotate(Vector2 target)
 		{
-			var targetPosition = target.ToVector3();
-			if (targetPosition == transform.position)
-				return;
-
-			var relativePos = targetPosition - transform.position;
-			transform.rotation = Quaternion.LookRotation(relativePos);
+			transform.rotation = Quaternion.LookRotation(transform.position - target.ToVector3(), Vector3.forward);
 		}
 	}
 }

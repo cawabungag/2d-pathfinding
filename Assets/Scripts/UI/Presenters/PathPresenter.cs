@@ -7,7 +7,7 @@ namespace UI.Presenters
 {
 	public class PathPresenter : BasePresenter<PathView>, IPopUp
 	{
-		private const float LINE_WIDTH = 0.2f;
+		private const float LINE_WIDTH = 0.1f;
 		public override string PresenterId => PresenterIds.PATH;
 		public override bool IsPopUp => true;
 
